@@ -50,9 +50,23 @@ Gran parte de la diversión proviene de observar el ecosistema y descubrir histo
 
 ## Ejecutar
 
-Abrir `index.html` en un navegador moderno.
-
 No requiere dependencias ni proceso de compilación.
+
+**Importante:** No abras `index.html` directamente mediante `file://`, ya que el proyecto utiliza módulos ES (`type="module"`). Debe ejecutarse a través de un servidor HTTP.
+
+Ejemplo:
+
+```bash
+python3 -m http.server 8000
+```
+
+O:
+
+```bash
+npx serve . -p 8000
+```
+
+Abrir `http://localhost:8000` en un navegador moderno.
 
 ## Controles
 
