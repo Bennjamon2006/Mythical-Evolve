@@ -77,6 +77,13 @@ export class Creature {
       Math.round(c * factor + c2[i] * (1 - factor)),
     );
 
+    const mutationChance = Math.random();
+
+    if (mutationChance < 0.1) {
+      // 10% chance to mutate color towards a inverse of the mixed color
+      return `rgb(${255 - mixed[0]}, ${255 - mixed[1]}, ${255 - mixed[2]})`;
+    }
+
     return `rgb(${mixed[0]}, ${mixed[1]}, ${mixed[2]})`;
   }
 
@@ -141,10 +148,25 @@ export class Creature {
 
     const gene = [...new Set([...this.gene, ...partner.gene])];
 
+    if (Math.random() < 0.2) {
+      gene.push(`mut${Math.floor(Math.random() * 100)}`); // Add random mutation gene
+    }
+
     if (gene.includes("god")) {
       childStrength *= 2; // God gene doubles strength
       childSpeed *= 2; // God gene doubles speed
     }
+
+    const mutation = Math.max(1, gene.length - 5) * Math.random() * 0.4; // More genes increase mutation chance
+
+    let factor = 0.8 + mutation; // Base factor with mutation
+
+    if (mutation > 10 && Math.random() < 0.5) {
+      factor = 1 / factor;
+    }
+
+    childStrength *= factor;
+    childSpeed *= factor;
 
     const child = new Creature(
       this.#joinNames(this.name, partner.name),
@@ -229,12 +251,14 @@ export class Creature {
   }
 
   #naturalDeath() {
-    if (this.timeSinceLastInteraction > 20000) {
-      if (Math.random() < 0.25) {
-        // 25% chance of dying after 20 seconds without interaction
+    const limit = 20000 - Math.min(Math.sqrt(this.strength) * 1000, 15000); // Stronger needs interactions to live longer
+    if (this.timeSinceLastInteraction > limit) {
+      const age = (Date.now() - this.birthTime) / 1000;
+      const maxChance = 1 / (2 + age / 10); // Older creatures have higher chance of dying
+      if (Math.random() > maxChance) {
         return true;
       } else {
-        this.timeSinceLastInteraction = 15000; // Reset timer to give creature another chance to interact
+        this.timeSinceLastInteraction = limit - 5000; // Give creature a chance to interact before dying
       }
     }
     return false;

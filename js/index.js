@@ -81,13 +81,20 @@ const populate = () => {
 
 const spawnGod = () => {
   const name = godNames[Math.floor(Math.random() * godNames.length)];
+
+  const bestStrength = Math.max(...creatures.map((c) => c.strength), 0);
+  const bestSpeed = Math.max(...creatures.map((c) => c.speed), 0);
+
+  const godStrength = bestStrength * (0.75 + Math.random() * 1.25);
+  const godSpeed = bestSpeed * (0.75 + Math.random() * 1.25);
+
   creatures.push(
     new Creature(
       name,
       Math.random() * canvas.width,
       Math.random() * canvas.height,
-      500 + Math.random() * 500,
-      100 + Math.random() * 100,
+      godSpeed,
+      godStrength,
       ["god"],
       -1, // Ancestral generation for gods
       "gold",
@@ -139,7 +146,7 @@ startMainLoop((timestamp) => {
   }
 
   if (Math.random() < 0.0001) {
-    // 0.1% chance to spawn a god each frame
+    // 0.01% chance to spawn a god each frame
     spawnGod();
     console.log("A god has spawned!");
   }
